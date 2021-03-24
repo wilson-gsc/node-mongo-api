@@ -1,13 +1,15 @@
 ﻿const express = require('express');
 const router = express.Router();
 const userService = require('./user.service');
+const authorize = require('_helpers/authorize')
+const Role = require('_helpers/role');
 
 // routes
-router.post('/authenticate', authenticate);
+router.post('/authenticate', authenticate);     // public route
 router.post('/register', register);
-router.get('/', getAll);
+router.get('/', authorize(Role.Admin), getAll); // admin only
 router.get('/current', getCurrent);
-router.get('/:id', getById);
+router.get('/:id', authorize(), getById);   // all authenticated users
 router.put('/:id', update);
 router.delete('/:id', _delete);
 
@@ -38,6 +40,14 @@ function getCurrent(req, res, next) {
 }
 
 function getById(req, res, next) {
+    const currentUser = req.user;
+    const id = parseInt(req.params.id);
+
+    // only allow admins to access other user records
+    if (id !== currentUser.sub && currentUser.role !== Role.Admin) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
     userService.getById(req.params.id)
         .then(user => user ? res.json(user) : res.sendStatus(404))
         .catch(err => next(err));

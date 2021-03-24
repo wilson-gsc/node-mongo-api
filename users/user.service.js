@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('_helpers/db');
 const User = db.User;
+const Role = require('_helpers/role');
 
 module.exports = {
     authenticate,
@@ -18,7 +19,8 @@ async function authenticate({ username, password }) {
     if (user && bcrypt.compareSync(password, user.hash)) {
         const token = jwt.sign({ sub: user.id }, config.secret, { expiresIn: '7d' });
         return {
-            ...user.toJSON(),
+            // ...user.toJSON(),
+            ...omitPassword(user),
             token
         };
     }
@@ -35,7 +37,7 @@ async function getById(id) {
 async function create(userParam) {
     // validate
     if (await User.findOne({ username: userParam.username })) {
-        throw 'Username "' + userParam.username + '" is already taken';
+        throw 'Username "' + userParam.username + '" is already taken!';
     }
 
     const user = new User(userParam);
@@ -71,4 +73,11 @@ async function update(id, userParam) {
 
 async function _delete(id) {
     await User.findByIdAndRemove(id);
+}
+
+// helper functions
+
+function omitPassword(user) {
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
 }
