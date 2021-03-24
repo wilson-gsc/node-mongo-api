@@ -1,4 +1,4 @@
 ﻿{
-    "connectionString": "mongodb://localhost/node-mongo-registration-login-api",
+    "connectionString": "mongodb+srv://wilson:asdf1234@cluster0.skgzn.mongodb.net/node-mongo-api?retryWrites=true&w=majority",
     "secret": "s3cr3t"
 }
