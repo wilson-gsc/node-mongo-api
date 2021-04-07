@@ -2,6 +2,7 @@
     "name": "node-mongo-registration-login-api",
     "version": "1.0.0",
     "description": "NodeJS + MongoDB API for User Management, Authentication and Registration",
+    "author": "Wilson Gayo",
     "license": "MIT",
     "repository": {
         "type": "git",
